@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const corsMiddleware = require('./middleware/corsMiddleware');
 
 /** Routen */
 const indexRouter = require('./routes/index');
@@ -19,6 +20,9 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Meine eigene Middleware zum Erlauben von CORS
+app.use(corsMiddleware);
 
 /** Statisch ausgelieferte Dateien */
 app.use(express.static(path.join(__dirname, 'public')));
