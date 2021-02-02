@@ -13,7 +13,22 @@
       "id": "1612263687087"
     }
   ],
-  "users": [],
+  "users": [
+    {
+      "vorname": "Ayame",
+      "nachname": "Nakiri",
+      "email": "ayame@nakiri.com",
+      "password": "abcdef",
+      "id": "1612275291819"
+    },
+    {
+      "vorname": "Gura",
+      "nachname": "Gawr",
+      "email": "gura@gawr.com",
+      "password": "abc",
+      "id": "1612275830494"
+    }
+  ],
   "orders": [
     {
       "produkt-id": "1612263148190",

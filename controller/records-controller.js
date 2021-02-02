@@ -71,7 +71,7 @@ const recordsDeleteIdController = (req, res, next) => {
     throw error;
   } else {
     meineDatenbank.get('records')
-      .remove({ id: id })
+      .remove({ id })
       .write();
     res.status(200).send('Record mit der Id: ' + id + ' aus der Datanbank entfernt.');
   }
