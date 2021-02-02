@@ -10,9 +10,9 @@ router
 
 router
   .route('/:id')
-  .get(recordsGetIdController)
-  .put(recordsPutIdController)
-  .delete(recordsDeleteIdController)
+    .get(recordsGetIdController)
+    .put(recordsPutIdController)
+    .delete(recordsDeleteIdController)
 ;
 
 module.exports = router;

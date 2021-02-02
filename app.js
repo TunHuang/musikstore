@@ -9,6 +9,7 @@ const corsMiddleware = require('./middleware/corsMiddleware');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const recordsRouter = require('./routes/records');
+const ordersRouter = require('./routes/orders');
 
 /** Initialisierung */
 const app = express();
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/records', recordsRouter);
+app.use('/orders', ordersRouter);
 
 /** Export */
 module.exports = app;
