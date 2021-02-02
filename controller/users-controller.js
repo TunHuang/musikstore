@@ -36,7 +36,7 @@ const usersPostController = (req, res, next) => {
 };
 
 const usersGetIdController = (req, res, next) => {
-  const id = req.params.id
+  const id = req.params.id;
   const user = meineDatenbank.get('users')
     .filter({ id })
     .value();
