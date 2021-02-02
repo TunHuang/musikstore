@@ -4,15 +4,15 @@ const { usersGetController, usersPostController, usersGetIdController, usersPutI
 
 router
   .route('/')
-  .get(usersGetController)
-  .post(usersPostController)
+    .get(usersGetController)
+    .post(usersPostController)
 ;
 
 router
   .route('/:id')
-  .get(usersGetIdController)
-  .put(usersPutIdController)
-  .delete(usersDeleteIdController)
+    .get(usersGetIdController)
+    .put(usersPutIdController)
+    .delete(usersDeleteIdController)
 ;
 
 module.exports = router;
