@@ -1,24 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const { recordsGetController, recordsPostController, recordsGetIdController, recordsPutIdController, recordsDeleteIdController } = require('../controller/records-controller');
 
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('meineDatenbank.json');
-const meineDatenbank = low(adapter);
+router
+  .route('/')
+    .get(recordsGetController)
+    .post(recordsPostController)
+;
 
-meineDatenbank.defaults({ records: [] }).write();
-
-router.get('/', (req, res) => {
-  let allRecords = meineDatenbank.get('records').value();
-  res.json(allRecords);
-});
-
-router.post('/:interpret', (req, res) => {
-  let newRecord = {
-    interpret: req.params.interpret
-  };
-  meineDatenbank.get('records').push(newRecord).write();
-  res.status(201).send('Gepostet unter dem Interpret: ' + newRecord.interpret);
-});
+router
+  .route('/:id')
+  .get(recordsGetIdController)
+  .put(recordsPutIdController)
+  .delete(recordsDeleteIdController)
+;
 
 module.exports = router;

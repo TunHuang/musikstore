@@ -1,10 +1,21 @@
 {
   "records": [
     {
-      "interpret": "Suisei"
+      "interpret": "Suisei",
+      "album": "test",
+      "id": "1612263148190",
+      "jahr": "test2"
     },
     {
-      "interpret": "Ayame"
+      "interpret": "Radiohead",
+      "album": "",
+      "id": "1612263378761"
+    },
+    {
+      "interpret": "Radiohead",
+      "album": "OK Computer",
+      "jahr": "1997",
+      "id": "1612263687087"
     }
   ]
 }
