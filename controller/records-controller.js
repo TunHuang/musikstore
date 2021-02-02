@@ -47,13 +47,13 @@ const recordsGetIdController = (req, res, next) => {
 const recordsPutIdController = (req, res, next) => {
   const newData = req.body;
   const id = req.params.id;
-  const founded = meineDatenbank.get('records').find({ id });
-  if (!founded.value()) {
+  const found = meineDatenbank.get('records').find({ id });
+  if (!found.value()) {
     const error = new Error('Es gibt kein Record mit der Id ' + id);
     error.statusCode = 422;
     throw error;
   } else {
-    founded
+    found
       .assign(newData)
       .write();
     res.status(200).send('Record mit der Id: ' + id + ' mit neuen Daten aktualisiert.');

@@ -51,12 +51,12 @@ const usersGetIdController = (req, res, next) => {
 const usersPutIdController = (req, res, next) => {
   const newData = req.body;
   const id = req.params.id;
-  const founded = meineDatenbank.get('users').find({ id });
-  if (!founded.value()) {
+  const found = meineDatenbank.get('users').find({ id });
+  if (!found.value()) {
     const error = createError(422, 'Es gibt keinen User mit der Id ' + id);
     throw error;
   } else {
-    founded
+    found
       .assign(newData)
       .write();
     res.status(200).send('User mit der Id: ' + id + ' mit neuen Datan aktualisiert.');
