@@ -1,9 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const { usersGetController, usersPostController, usersGetIdController, usersPutIdController, usersDeleteIdController } = require('../controller/users-controller');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router
+  .route('/')
+  .get(usersGetController)
+  .post(usersPostController)
+;
+
+router
+  .route('/:id')
+  .get(usersGetIdController)
+  .put(usersPutIdController)
+  .delete(usersDeleteIdController)
+;
 
 module.exports = router;
