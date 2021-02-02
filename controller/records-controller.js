@@ -31,28 +31,50 @@ const recordsPostController = (req, res, next) => {
 };
 
 const recordsGetIdController = (req, res, next) => {
+  const id = req.params.id;
   const record = meineDatenbank.get('records')
-    .filter({ id: req.params.id })
+    .filter({ id })
     .value();
-  res.status(200).json(record);
+  if (!record.length) {
+    const error = new Error('Es gibt kein Record mit der Id ' + id);
+    error.statusCode = 422;
+    throw error;
+  } else {
+    res.status(200).json(record);
+  }
 };
 
 const recordsPutIdController = (req, res, next) => {
   const newData = req.body;
   const id = req.params.id;
-  meineDatenbank.get('records')
-    .find({ id: id })
-    .assign(newData)
-    .write();
-  res.status(200).send('Record mit der Id: ' + id + ' mit neuen Daten aktualisiert.');
+  const founded = meineDatenbank.get('records').find({ id });
+  if (!founded.value()) {
+    const error = new Error('Es gibt kein Record mit der Id ' + id);
+    error.statusCode = 422;
+    throw error;
+  } else {
+    founded
+      .assign(newData)
+      .write();
+    res.status(200).send('Record mit der Id: ' + id + ' mit neuen Daten aktualisiert.');
+  }
 };
 
 const recordsDeleteIdController = (req, res, next) => {
   const id = req.params.id;
-  meineDatenbank.get('records')
-    .remove({ id: id })
-    .write();
-  res.status(200).send('Record mit der Id: ' + id + ' aus der Datanbank entfernt.');
+  const record = meineDatenbank.get('records')
+    .filter({ id })
+    .value();
+  if (!record.length) {
+    const error = new Error('Es gibt kein Record mit der Id ' + id);
+    error.statusCode = 422;
+    throw error;
+  } else {
+    meineDatenbank.get('records')
+      .remove({ id: id })
+      .write();
+    res.status(200).send('Record mit der Id: ' + id + ' aus der Datanbank entfernt.');
+  }
 };
 
 module.exports = { recordsGetController, recordsPostController, recordsGetIdController, recordsPutIdController, recordsDeleteIdController };
