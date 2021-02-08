@@ -4,7 +4,7 @@ const User = require('../models/user-model');
 const Record = require('../models/record-model');
 const Order = require('../models/order-model');
 
-const uri = 'mongodb://localhost:27017/kleinseeding';
+const uri = 'mongodb://localhost:27017/promiseseeding2';
 
 
 mongoose.connect(uri, {
@@ -13,47 +13,69 @@ mongoose.connect(uri, {
   useUnifiedTopology: true
 });
 
-let users = [];
-for (let i = 0; i < 20; i++) {
-  const vorname = faker.name.firstName();
-  const nachname = faker.name.lastName();
-  let newUser = {
-    vorname,
-    nachname,
-    email: faker.internet.email(vorname, nachname),
-    password: faker.internet.password(10)
-  };
-  users.push(newUser);
-}
+let db = mongoose.connection;
 
-User.insertMany(users);
+db.on('error', error => console.error(error));
 
-let records = [];
-for (let i = 0; i < 20; i++) {
-  const interpret = faker.internet.userName();
-  const album = faker.lorem.word();
-  const jahr = 2010;
-  let newRecord = {
-    interpret,
-    album,
-    jahr
-  };
-  records.push(newRecord);
-}
+db.once('open', () => {
+  console.log('Verbnindung steht');
 
-Record.insertMany(records);
+  // Seeding users
+  let users = [];
 
-let orders = [];
-for (let i = 0; i < 20; i++) {
-  const produktId = faker.random.number(9999999999);
-  const anzahl = faker.random.number(10);
-  let newOrder = {
-    "produkt-id": produktId,
-    anzahl
-  };
-  orders.push(newOrder);
-}
+  for (let i = 0; i < 20; i++) {
+    const vorname = faker.name.firstName();
+    const nachname = faker.name.lastName();
+    let newUser = {
+      vorname,
+      nachname,
+      email: faker.internet.email(vorname, nachname),
+      password: faker.internet.password(10)
+    };
+    users.push(newUser);
+  }
 
-Order.insertMany(orders);
+  let userPromise = User.insertMany(users);
 
-mongoose.connection.close;
+  // Seeding records
+  let records = [];
+
+  for (let i = 0; i < 20; i++) {
+    const interpret = faker.internet.userName();
+    const album = faker.lorem.word();
+    const jahr = faker.random.number({
+      'min': 1960,
+      'max': 2021
+    });
+    let newRecord = {
+      interpret,
+      album,
+      jahr
+    };
+    records.push(newRecord);
+  }
+
+  let recordPromise = Record.insertMany(records);
+
+  // Seeding orders
+  let orders = [];
+  for (let i = 0; i < 20; i++) {
+    const produktId = faker.random.number(9999999999);
+    const anzahl = faker.random.number({
+      'min': 1,
+      'max': 10
+    });
+    let newOrder = {
+      "produkt-id": produktId,
+      anzahl
+    };
+    orders.push(newOrder);
+  }
+
+  let orderPromise = Order.insertMany(orders);
+
+  Promise.all([userPromise, recordPromise, orderPromise]).then(values => {
+    console.log('Datenbank erfolgreich geseedet', values);
+    db.close();
+  }).catch(error => console.error("Fehler beim Seeden", error));
+});
