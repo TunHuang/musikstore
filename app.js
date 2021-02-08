@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const corsMiddleware = require('./middleware/corsMiddleware');
 const errorMiddleware = require('./middleware/errorMiddleware');
+const mongoose = require('mongoose');
 
 /** Routen */
 const indexRouter = require('./routes/index');
@@ -15,6 +16,23 @@ const undefinedRouter = require('./routes/undefined');
 
 /** Initialisierung */
 const app = express();
+
+// mongoose
+const uri = 'mongodb://localhost:27017/seededRecordshop';
+
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false
+});
+
+let db = mongoose.connection;
+
+db.on('error', error => console.error(error));
+
+db.once('open', () => console.log('Mit Datenbank verbunden'));
 
 /** Protokollierung */
 app.use(logger('dev'));
