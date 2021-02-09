@@ -1,4 +1,5 @@
 const User = require('../models/user-model');
+const createError = require('http-errors');
 
 const usersGetController = (req, res, next) => User.find((err, docs) => {
   if (err) {
@@ -49,7 +50,8 @@ const usersPutIdController = (req, res, next) => {
   const _id = req.params.id;
   User.findOneAndUpdate({ _id }, newData, {new: true}, (err, user) => {
     if (err) {
-      next(err);
+      const error = createError(500, err);
+      next(error);
     } else {
       res.status(200).send(user);
     }

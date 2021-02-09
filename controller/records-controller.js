@@ -56,7 +56,9 @@ const recordsPutIdController = (req, res, next) => {
   const _id = req.params.id;
   Record.findOneAndUpdate({ _id }, newData, { new: true }, (err, record) => {
     if (err) {
-      next(err);
+      const error = new Error(err);
+      error.statusCode = 500;
+      next(error);
     } else {
       res.status(200).send(record);
     }

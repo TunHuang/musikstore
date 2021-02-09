@@ -1,4 +1,5 @@
 const Order = require('../models/order-model');
+const createError = require('http-errors');
 
 const ordersGetController = (req, res, next) => Order.find((err, docs) => {
   if (err) {
@@ -44,7 +45,8 @@ const ordersPutIdController = (req, res, next) => {
   const _id = req.params.id;
   Order.findOneAndUpdate({ _id }, newData, {new:true}, (err, order) => {
     if (err) {
-      next(err);
+      const error = createError(500, err);
+      next(error);
     } else {
       res.status(200).send(order);
     }
