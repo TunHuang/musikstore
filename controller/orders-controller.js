@@ -1,15 +1,12 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('meineDatenbank.json');
-const meineDatenbank = low(adapter);
-const createError = require('http-errors');
+const Order = require('../models/order-model');
 
-meineDatenbank.defaults({ orders: [] }).write();
-
-const ordersGetController = (req, res, next) => {
-  const allOrders = meineDatenbank.get('orders').value();
-  res.status(200).json(allOrders);
-};
+const ordersGetController = (req, res, next) => Order.find((err, docs) => {
+  if (err) {
+    res.status(500).send('Fehler bei GET auf /orders/: ' + err);
+  } else {
+    res.status(200).send(docs);
+  }
+});
 
 const ordersPostController = (req, res, next) => {
   const newOrder = req.body;
@@ -21,56 +18,48 @@ const ordersPostController = (req, res, next) => {
     const error = createError(422, 'Die Anzahl muss angegeben werden.');
     throw error;
   } else {
-    meineDatenbank.get('orders').push(newOrder)
-      .last()
-      .assign({ id })
-      .write();
-    res.status(201).send('Gepostet unter der Id: ' + id);
+    Order.create(newOrder, (err, order) => {
+      if (err) {
+        res.status(500).send('Fehler bei POST auf /orders/: ' + err);
+      } else {
+        res.status(201).send('Gepostet als ' + order)
+      }
+    });
   }
 };
 
 const ordersGetIdController = (req, res, next) => {
-  const id = req.params.id;
-  const order = meineDatenbank.get('orders')
-    .filter({ id })
-    .value();
-  if (!order.length) {
-    const error = createError(422, 'Es gibt keine Bestellung mit der Id ' + id);
-    throw error;
-  } else {
-    res.status(200).json(order);
-  }
+  const _id = req.params.id;
+  Order.find({ _id }, (err, docs) => {
+    if (err) {
+      res.status(500).send('Fehler bei GET auf /users/ mit ID: ' + err);
+    } else {
+      res.status(200).send(docs);
+    }
+  });
 };
 
 const ordersPutIdController = (req, res, next) => {
   const newData = req.body;
-  const id = req.params.id;
-  const found = meineDatenbank.get('orders').find({ id });
-  if (!found.value()) {
-    const error = createError(422, 'Es gibt keine Bestellung mit der Id ' + id);
-    throw error;
-  } else {
-    found
-      .assign(newData)
-      .write();
-    res.status(200).send('Bestellung mit der Id: ' + id + ' mit neuen Datan aktualisiert.');
-  }
+  const _id = req.params.id;
+  Order.findOneAndUpdate({ _id }, newData, {new:true}, (err, order) => {
+    if (err) {
+      next(err);
+    } else {
+      res.status(200).send(order);
+    }
+  });
 };
 
 const ordersDeleteIdController = (req, res, next) => {
-  const id = req.params.id;
-  const order = meineDatenbank.get('orders')
-    .filter({ id })
-    .value();
-  if (!order.length) {
-    const error = createError(422, 'Es gibt keine Bestellung mit der Id ' + id);
-    throw error;
-  } else {
-    meineDatenbank.get('orders')
-      .remove({ id })
-      .write();
-    res.status(200).send('Bestellung mit der Id: ' + id + ' aus der Datenbank entfernt.');
-  }
+  const _id = req.params.id;
+  Order.deleteOne({ _id }, (err, order) => {
+    if (err) {
+      res.status(500).send('Fehler beim Löschen: ' + err);
+    } else {
+      res.status(200).send(order);
+    }
+  });
 };
 
 module.exports = { ordersGetController, ordersPostController, ordersGetIdController, ordersPutIdController, ordersDeleteIdController };

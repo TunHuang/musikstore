@@ -1,19 +1,15 @@
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('meineDatenbank.json');
-const meineDatenbank = low(adapter);
-const createError = require('http-errors');
+const User = require('../models/user-model');
 
-meineDatenbank.defaults({ users: [] }).write();
-
-const usersGetController = (req, res, next) => {
-  const allUsers = meineDatenbank.get('users').value();
-  res.status(200).json(allUsers);
-};
+const usersGetController = (req, res, next) => User.find((err, docs) => {
+  if (err) {
+    res.status(500).send('Fehler bei GET auf /users/: ' + err);
+  } else {
+    res.status(200).send(docs);
+  }
+});
 
 const usersPostController = (req, res, next) => {
   const newUser = req.body;
-  const id = Date.now().toString();
   if (!newUser.vorname) {
     const error = createError(422, 'Der Vorname muss angegeben werden.');
     throw error;
@@ -27,56 +23,48 @@ const usersPostController = (req, res, next) => {
     const error = createError(422, 'Ein Passwort muss angegeben werden.');
     throw error;
   } else {
-    meineDatenbank.get('users').push(newUser)
-      .last()
-      .assign({ id })
-      .write();
-    res.status(201).send('Gepostet unter der ID: ' + id);
+    User.create(newUser, (err, user) => {
+      if (err) {
+        res.status(500).send('Fehler bei POST auf /users/: ' + err);
+      } else {
+        res.status(201).send('Gepostet als ' + user)
+      }
+    });
   }
 };
 
 const usersGetIdController = (req, res, next) => {
-  const id = req.params.id;
-  const user = meineDatenbank.get('users')
-    .filter({ id })
-    .value();
-  if (!user.length) {
-    const error = createError(422, 'Es gibt keinen User mit der Id ' + id);
-    throw error;
-  } else {
-    res.status(200).json(user);
-  }
+  const _id = req.params.id;
+  User.find({ _id }, (err, docs) => {
+    if (err) {
+      res.status(500).send('Fehler bei GET auf /users/ mit ID: ' + err);
+    } else {
+      res.status(200).send(docs);
+    }
+  });
 };
 
 const usersPutIdController = (req, res, next) => {
   const newData = req.body;
-  const id = req.params.id;
-  const found = meineDatenbank.get('users').find({ id });
-  if (!found.value()) {
-    const error = createError(422, 'Es gibt keinen User mit der Id ' + id);
-    throw error;
-  } else {
-    found
-      .assign(newData)
-      .write();
-    res.status(200).send('User mit der Id: ' + id + ' mit neuen Datan aktualisiert.');
-  }
+  const _id = req.params.id;
+  User.findOneAndUpdate({ _id }, newData, {new: true}, (err, user) => {
+    if (err) {
+      next(err);
+    } else {
+      res.status(200).send(user);
+    }
+  });
 };
 
 const usersDeleteIdController = (req, res, next) => {
-  const id = req.params.id;
-  const user = meineDatenbank.get('users')
-    .filter({ id })
-    .value();
-  if (!user.length) {
-    const error = createError(422, 'Es gibt keinen User mit der Id ' + id);
-    throw error;
-  } else {
-    meineDatenbank.get('users')
-      .remove({ id })
-      .write();
-    res.status(200).send('User mit der Id: ' + id + ' aus der Datenbank entfernt.');
-  }
+  const _id = req.params.id;
+  User.deleteOne({ _id }, (err, user) => {
+    if (err) {
+      res.status(500).send('Fehler beim Löschen: ' + err);
+    } else {
+      res.status(200).send(user);
+    }
+  });
 };
 
 module.exports = { usersGetController, usersPostController, usersGetIdController, usersPutIdController, usersDeleteIdController };
