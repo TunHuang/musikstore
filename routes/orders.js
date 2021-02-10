@@ -1,11 +1,37 @@
 const express = require('express');
 const router = express.Router();
-const { ordersGetController, ordersPostController, ordersGetIdController, ordersPutIdController, ordersDeleteIdController } = require('../controller/orders-controller');
+const {
+  ordersGetController,
+  ordersPostController,
+  ordersGetIdController,
+  ordersPutIdController,
+  ordersDeleteIdController
+} = require('../controller/orders-controller');
+
+const { check } = require('express-validator');
+
+const validDataOrder = [
+  check('produkt-id')
+    .not()
+    .isEmpty()
+    .withMessage('Produkt-ID muss angegeben werden.')
+    .trim(),
+  check('anzahl')
+    .not()
+    .isEmpty()
+    .withMessage('Anzahl muss angegeben werden')
+    .isInt({
+      min: 1,
+      max: 30
+    })
+    .withMessage('Anzahl soll eine ganze Zahl zwischen 1 und 30 sein.')
+    .trim()
+];
 
 router
   .route('/')
     .get(ordersGetController)
-    .post(ordersPostController)
+    .post(validDataOrder, ordersPostController)
 ;
 
 router

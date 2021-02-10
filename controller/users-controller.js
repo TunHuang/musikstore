@@ -19,7 +19,7 @@ const usersPostController = async (req, res, next) => {
       });
     } else {
       const newUser = await User.create(req.body);
-      res.status(200).send(newUser);
+      res.status(201).send(newUser);
     }
   } catch (err) {
     next(err);

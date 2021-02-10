@@ -1,5 +1,6 @@
 const Order = require('../models/order-model');
 const createError = require('http-errors');
+const { validationResult } = require('express-validator');
 
 const ordersGetController = (req, res, next) => Order.find((err, docs) => {
   if (err) {
@@ -9,22 +10,19 @@ const ordersGetController = (req, res, next) => Order.find((err, docs) => {
   }
 });
 
-const ordersPostController = (req, res, next) => {
-  const newOrder = req.body;
-  if (!newOrder['produkt-id']) {
-    const error = createError(422, 'Die Produkt-Id muss angegeben werden.');
-    throw error;
-  } else if (!newOrder.anzahl) {
-    const error = createError(422, 'Die Anzahl muss angegeben werden.');
-    throw error;
-  } else {
-    Order.create(newOrder, (err, order) => {
-      if (err) {
-        res.status(500).send('Fehler bei POST auf /orders/: ' + err);
-      } else {
-        res.status(201).send('Gepostet als ' + order)
-      }
-    });
+const ordersPostController = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json({
+        fehlerBeiValidierung: errors.array()
+      });
+    } else {
+      const newOrder = await Order.create(req.body);
+      res.status(201).send(newOrder);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 

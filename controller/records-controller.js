@@ -1,4 +1,5 @@
 const Record = require('../models/record-model');
+const { validationResult } = require('express-validator');
 
 const recordsGetController = (req, res, next) => Record.find((err, docs) => {
   if (err) {
@@ -8,24 +9,19 @@ const recordsGetController = (req, res, next) => Record.find((err, docs) => {
   }
 });
 
-const recordsPostController = (req, res, next) => {
-  const newRecord = req.body;
-  if (!newRecord.interpret) {
-    const error = new Error('Der Interpret muss angegeben werden.');
-    error.statusCode = 422;
-    throw error;
-  } else if (!newRecord.album) {
-    const error = new Error('Das Album muss angegeben werden.');
-    error.statusCode = 422;
-    throw error;
-  } else {
-    Record.create(newRecord, (err, record) => {
-      if (err) {
-        res.status(500).send('Fehler bei POST auf /records/: ' + err);
-      } else {
-        res.status(201).send('Gepostet als ' + record);
-      }
-    });
+const recordsPostController = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json({
+        fehlerBeiValidierung: errors.array()
+      });
+    } else {
+      const newRecord = await Record.create(req.body);
+      res.status(201).send(newRecord);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
