@@ -11,7 +11,6 @@ const ordersGetController = (req, res, next) => Order.find((err, docs) => {
 
 const ordersPostController = (req, res, next) => {
   const newOrder = req.body;
-  const id = Date.now().toString();
   if (!newOrder['produkt-id']) {
     const error = createError(422, 'Die Produkt-Id muss angegeben werden.');
     throw error;

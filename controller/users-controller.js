@@ -1,5 +1,6 @@
 const User = require('../models/user-model');
 const createError = require('http-errors');
+const { validationResult } = require('express-validator');
 
 const usersGetController = (req, res, next) => User.find((err, docs) => {
   if (err) {
@@ -9,28 +10,19 @@ const usersGetController = (req, res, next) => User.find((err, docs) => {
   }
 });
 
-const usersPostController = (req, res, next) => {
-  const newUser = req.body;
-  if (!newUser.vorname) {
-    const error = createError(422, 'Der Vorname muss angegeben werden.');
-    throw error;
-  } else if (!newUser.nachname) {
-    const error = createError(422, 'Der Nachname muss angegeben werden.');
-    throw error;
-  } else if (!newUser.email) {
-    const error = createError(422, 'Die E-Mail muss angegeben werden.');
-    throw error;
-  } else if (!newUser.password) {
-    const error = createError(422, 'Ein Passwort muss angegeben werden.');
-    throw error;
-  } else {
-    User.create(newUser, (err, user) => {
-      if (err) {
-        res.status(500).send('Fehler bei POST auf /users/: ' + err);
-      } else {
-        res.status(201).send('Gepostet als ' + user)
-      }
-    });
+const usersPostController = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json({
+        fehlerBeiValidierung: errors.array()
+      });
+    } else {
+      const newUser = await User.create(req.body);
+      res.status(200).send(newUser);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -48,7 +40,7 @@ const usersGetIdController = (req, res, next) => {
 const usersPutIdController = (req, res, next) => {
   const newData = req.body;
   const _id = req.params.id;
-  User.findOneAndUpdate({ _id }, newData, {new: true}, (err, user) => {
+  User.findOneAndUpdate({ _id }, newData, { new: true }, (err, user) => {
     if (err) {
       const error = createError(500, err);
       next(error);
