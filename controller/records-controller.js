@@ -1,13 +1,15 @@
 const Record = require('../models/record-model');
 const { validationResult } = require('express-validator');
 
-const recordsGetController = (req, res, next) => Record.find((err, docs) => {
-  if (err) {
-    res.status(500).send('Fehler bei GET auf /records/: ' + err);
-  } else {
-    res.status(200).send(docs);
+const recordsGetController = async (req, res, next) => {
+  try {
+    const records = await Record.find();
+    res.status(200).send(records);
+  } catch (err) {
+    const error = createError(500, err);
+    next(error);
   }
-});
+};
 
 const recordsPostController = async (req, res, next) => {
   try {
@@ -21,7 +23,8 @@ const recordsPostController = async (req, res, next) => {
       res.status(201).send(newRecord);
     }
   } catch (err) {
-    next(err);
+    const error = createError(500, err);
+    next(error);
   }
 };
 

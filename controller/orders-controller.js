@@ -2,13 +2,15 @@ const Order = require('../models/order-model');
 const createError = require('http-errors');
 const { validationResult } = require('express-validator');
 
-const ordersGetController = (req, res, next) => Order.find((err, docs) => {
-  if (err) {
-    res.status(500).send('Fehler bei GET auf /orders/: ' + err);
-  } else {
-    res.status(200).send(docs);
+const ordersGetController = async (req, res, next) => {
+  try {
+    const orders = await Order.find();
+    res.status(200).send(orders);
+  } catch (err) {
+    const error = createError(500, err);
+    next(error);
   }
-});
+};
 
 const ordersPostController = async (req, res, next) => {
   try {
@@ -22,7 +24,8 @@ const ordersPostController = async (req, res, next) => {
       res.status(201).send(newOrder);
     }
   } catch (err) {
-    next(err);
+    const error = createError(500, err);
+    next(error);
   }
 };
 
