@@ -39,15 +39,15 @@ const usersPostController = async (req, res, next) => {
   }
 };
 
-const usersGetIdController = (req, res, next) => {
-  const _id = req.params.id;
-  User.find({ _id }, (err, docs) => {
-    if (err) {
-      res.status(500).send('Fehler bei GET auf /users/ mit ID: ' + err);
-    } else {
-      res.status(200).send(docs);
-    }
-  });
+const usersGetIdController = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const foundUser = await User.find({ _id });
+    res.status(200).send(foundUser);
+  } catch (err) {
+    const error = createError(500, 'Fehler bei GET auf /users/ mit ID ' + err);
+    next(error);
+  }
 };
 
 const usersPutIdController = async (req, res, next) => {

@@ -1,5 +1,6 @@
 const Record = require('../models/record-model');
 const { validationResult } = require('express-validator');
+const createError = require('http-errors');
 
 const recordsGetController = async (req, res, next) => {
   try {
@@ -28,15 +29,15 @@ const recordsPostController = async (req, res, next) => {
   }
 };
 
-const recordsGetIdController = (req, res, next) => {
-  const _id = req.params.id;
-  Record.find({ _id }, (err, docs) => {
-    if (err) {
-      res.status(500).send('Fehler bei GET auf /records/ mit ID: ' + err);
-    } else {
-      res.status(200).send(docs);
-    }
-  });
+const recordsGetIdController = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const foundRecord = await Record.find({ _id });
+    res.status(200).send(foundRecord);
+  } catch (err) {
+    const error = createError(500, 'Fehler bei GET auf /records/ mit ID ' + err);
+    next(error);
+  };
 
   // const record = meineDatenbank.get('records')
   //   .filter({ id })

@@ -29,15 +29,15 @@ const ordersPostController = async (req, res, next) => {
   }
 };
 
-const ordersGetIdController = (req, res, next) => {
-  const _id = req.params.id;
-  Order.find({ _id }, (err, docs) => {
-    if (err) {
-      res.status(500).send('Fehler bei GET auf /users/ mit ID: ' + err);
-    } else {
-      res.status(200).send(docs);
-    }
-  });
+const ordersGetIdController = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const foundOrder = await Order.find({ _id });
+    res.status(200).send(foundOrder);
+  } catch (err) {
+    const error = createError(500, 'Fehler bei GET auf /orders/ mit ID ' + err);
+    next(error);
+  }
 };
 
 const ordersPutIdController = async (req, res, next) => {
