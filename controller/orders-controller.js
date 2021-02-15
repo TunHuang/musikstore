@@ -60,15 +60,16 @@ const ordersPutIdController = async (req, res, next) => {
   }
 };
 
-const ordersDeleteIdController = (req, res, next) => {
-  const _id = req.params.id;
-  Order.deleteOne({ _id }, (err, order) => {
-    if (err) {
-      res.status(500).send('Fehler beim Löschen: ' + err);
-    } else {
-      res.status(200).send(order);
-    }
-  });
+const ordersDeleteIdController = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const result = await Order.deleteOne({ _id });
+    res.status(200).send(result);
+  }
+  catch (err) {
+    const error = createError(500, 'Fehler beim Löschen auf /orders/ mit ID ' + err);
+    next(error);
+  }
 };
 
 module.exports = { ordersGetController, ordersPostController, ordersGetIdController, ordersPutIdController, ordersDeleteIdController };

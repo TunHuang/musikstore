@@ -80,15 +80,16 @@ const usersPutIdController = async (req, res, next) => {
   }
 };
 
-const usersDeleteIdController = (req, res, next) => {
-  const _id = req.params.id;
-  User.deleteOne({ _id }, (err, user) => {
-    if (err) {
-      res.status(500).send('Fehler beim Löschen: ' + err);
-    } else {
-      res.status(200).send(user);
-    }
-  });
+const usersDeleteIdController = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const result = await User.deleteOne({ _id });
+    res.status(200).send(result);
+  }
+  catch (err) {
+    const error = createError(500, 'Fehler beim Löschen auf /users/ mit ID ' + err);
+    next(error);
+  }
 };
 
 module.exports = { usersGetController, usersPostController, usersGetIdController, usersPutIdController, usersDeleteIdController };

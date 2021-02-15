@@ -84,15 +84,16 @@ const recordsPutIdController = async (req, res, next) => {
   // }
 };
 
-const recordsDeleteIdController = (req, res, next) => {
-  const _id = req.params.id;
-  Record.deleteOne({ _id }, (err, record) => {
-    if (err) {
-      res.status(500).send('Fehler beim Löschen: ' + err);
-    } else {
-      res.status(200).send(record);
-    }
-  });
+const recordsDeleteIdController = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const result = await Record.deleteOne({ _id });
+    res.status(200).send(result);
+  }
+  catch (err) {
+    const error = createError(500, 'Fehler beim Löschen auf /records/ mit ID ' + err);
+    next(error);
+  }
 
   // const record = meineDatenbank.get('records')
   //   .filter({ id })
