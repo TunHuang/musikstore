@@ -62,7 +62,8 @@ const usersPutIdController = async (req, res, next) => {
     } else {
       const existedUser = await User.find({ email: newData.email });
       if (existedUser.length > 0) {
-        res.status(409).send('Es gibt bereits einen Nutzer mit der Email-Adresse.');
+        const error = createError(409, 'Es gibt bereits einen Nutzer mit der Email-Adresse.');
+        next(error);
       } else if (newData.password) {
         const hashedPassword = await bcrypt.hash(newData.password, 10);
         const updatedUser = await User.findOneAndUpdate({ _id }, { ...newData, password: hashedPassword }, { new: true });
@@ -74,7 +75,8 @@ const usersPutIdController = async (req, res, next) => {
     }
   }
   catch (err) {
-    next(err);
+    const error = createError(500, err);
+    next(error);
   }
 };
 
