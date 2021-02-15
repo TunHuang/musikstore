@@ -7,7 +7,7 @@ const ordersGetController = async (req, res, next) => {
     const orders = await Order.find();
     res.status(200).send(orders);
   } catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei GET auf /orders/ ' + err);
     next(error);
   }
 };
@@ -24,7 +24,7 @@ const ordersPostController = async (req, res, next) => {
       res.status(201).send(newOrder);
     }
   } catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei POST auf /orders/ ' + err);
     next(error);
   }
 };
@@ -55,7 +55,7 @@ const ordersPutIdController = async (req, res, next) => {
     }
   }
   catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei PUT auf /orders/ mit ID ' + err);
     next(error);
   }
 };
@@ -67,7 +67,7 @@ const ordersDeleteIdController = async (req, res, next) => {
     res.status(200).send(result);
   }
   catch (err) {
-    const error = createError(500, 'Fehler beim Löschen auf /orders/ mit ID ' + err);
+    const error = createError(500, 'Fehler bei DELETE auf /orders/ mit ID ' + err);
     next(error);
   }
 };

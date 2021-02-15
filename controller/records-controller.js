@@ -7,7 +7,7 @@ const recordsGetController = async (req, res, next) => {
     const records = await Record.find();
     res.status(200).send(records);
   } catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei GET auf /records/ ' + err);
     next(error);
   }
 };
@@ -24,7 +24,7 @@ const recordsPostController = async (req, res, next) => {
       res.status(201).send(newRecord);
     }
   } catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei POST auf /records/ ' + err);
     next(error);
   }
 };
@@ -66,8 +66,7 @@ const recordsPutIdController = async (req, res, next) => {
     }
   }
   catch (err) {
-    const error = new Error(err);
-    error.status = 500;
+    const error = createError(500, 'Fehler bei PUT auf /records/ mit ID ' + err);
     next(error);
   }
 
@@ -91,7 +90,7 @@ const recordsDeleteIdController = async (req, res, next) => {
     res.status(200).send(result);
   }
   catch (err) {
-    const error = createError(500, 'Fehler beim Löschen auf /records/ mit ID ' + err);
+    const error = createError(500, 'Fehler bei DELETE auf /records/ mit ID ' + err);
     next(error);
   }
 

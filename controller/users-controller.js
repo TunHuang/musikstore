@@ -8,7 +8,7 @@ const usersGetController = async (req, res, next) => {
     const users = await User.find();
     res.status(200).send(users);
   } catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei GET auf /users/ ' + err);
     next(error);
   }
 };
@@ -34,7 +34,7 @@ const usersPostController = async (req, res, next) => {
       }
     }
   } catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei POST auf /users/ ' + err);
     next(error);
   }
 };
@@ -75,7 +75,7 @@ const usersPutIdController = async (req, res, next) => {
     }
   }
   catch (err) {
-    const error = createError(500, err);
+    const error = createError(500, 'Fehler bei PUT auf /users/ mit ID ' + err);
     next(error);
   }
 };
@@ -87,7 +87,7 @@ const usersDeleteIdController = async (req, res, next) => {
     res.status(200).send(result);
   }
   catch (err) {
-    const error = createError(500, 'Fehler beim Löschen auf /users/ mit ID ' + err);
+    const error = createError(500, 'Fehler bei DELETE auf /users/ mit ID ' + err);
     next(error);
   }
 };
