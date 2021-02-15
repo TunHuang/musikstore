@@ -37,17 +37,24 @@ const ordersGetIdController = (req, res, next) => {
   });
 };
 
-const ordersPutIdController = (req, res, next) => {
-  const newData = req.body;
-  const _id = req.params.id;
-  Order.findOneAndUpdate({ _id }, newData, {new:true}, (err, order) => {
-    if (err) {
-      const error = createError(500, err);
-      next(error);
+const ordersPutIdController = async (req, res, next) => {
+  try {
+    const newData = req.body;
+    const _id = req.params.id;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json({
+        fehlerBeiValidierung: errors.array()
+      });
     } else {
-      res.status(200).send(order);
+      const updatedOrder = await Order.findOneAndUpdate({ _id }, newData, { new: true });
+      res.status(200).send(updatedOrder);
     }
-  });
+  }
+  catch (err) {
+    const error = createError(500, err);
+    next(error);
+  }
 };
 
 const ordersDeleteIdController = (req, res, next) => {

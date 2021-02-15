@@ -30,7 +30,8 @@ const usersPostController = async (req, res, next) => {
       }
     }
   } catch (err) {
-    next(err);
+    const error = createError(500, err);
+    next(error);
   }
 };
 

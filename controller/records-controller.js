@@ -47,18 +47,25 @@ const recordsGetIdController = (req, res, next) => {
   // }
 };
 
-const recordsPutIdController = (req, res, next) => {
-  const newData = req.body;
-  const _id = req.params.id;
-  Record.findOneAndUpdate({ _id }, newData, { new: true }, (err, record) => {
-    if (err) {
-      const error = new Error(err);
-      error.statusCode = 500;
-      next(error);
+const recordsPutIdController = async (req, res, next) => {
+  try {
+    const newData = req.body;
+    const _id = req.params.id;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json({
+        fehlerBeiValidierung: errors.array()
+      });
     } else {
-      res.status(200).send(record);
+      const updatedRecord = await Record.findOneAndUpdate({ _id }, newData, { new: true });
+      res.status(200).send(updatedRecord);
     }
-  });
+  }
+  catch (err) {
+    const error = new Error(err);
+    error.status = 500;
+    next(error);
+  }
 
   // const found = meineDatenbank.get('records').find({ id });
   // if (!found.value()) {
