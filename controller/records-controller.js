@@ -1,4 +1,5 @@
 const Record = require('../models/record-model');
+const User = require('../models/user-model');
 const { validationResult } = require('express-validator');
 const createError = require('http-errors');
 
@@ -15,7 +16,10 @@ const recordsGetController = async (req, res, next) => {
 const recordsPostController = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    const user = await User.findOne({_id : req.tokenUser.userId});
+    if (!user.isAdmin) {
+      res.status(401).send('Nur Administratoren dürfen das tun.');
+    } else if (!errors.isEmpty()) {
       res.status(422).json({
         fehlerBeiValidierung: errors.array()
       });

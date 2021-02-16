@@ -14,10 +14,13 @@ const {
   validDataUpdateRecord
 } = require('../validations/record-validation');
 
+const auth = require('../middleware/authMiddleware');
+const isAdmin = require('../middleware/adminMiddleware');
+
 router
   .route('/')
     .get(recordsGetController)
-    .post(validDataRecord, recordsPostController)
+    .post(auth, validDataRecord, recordsPostController)
 ;
 
 router
