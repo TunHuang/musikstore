@@ -30,11 +30,13 @@ db.once('open', () => {
   for (let i = 0; i < 20; i++) {
     const vorname = faker.name.firstName();
     const nachname = faker.name.lastName();
+    const email = faker.internet.email(schreibErsteBuchstabeKlein(vorname), schreibErsteBuchstabeKlein(nachname));
+    const password = faker.internet.password(10);
     let newUser = {
       vorname,
       nachname,
-      email: faker.internet.email(schreibErsteBuchstabeKlein(vorname), schreibErsteBuchstabeKlein(nachname)),
-      password: faker.internet.password(10)
+      email,
+      password
     };
     users.push(newUser);
   }
