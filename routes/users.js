@@ -6,13 +6,16 @@ const {
   usersPostController,
   usersGetIdController,
   usersPutIdController,
-  usersDeleteIdController
+  usersDeleteIdController,
+  usersLoginController
 } = require('../controller/users-controller');
 
 const {
   validDataUser,
   validDataUpdateUser
 } = require('../validations/user-validation');
+
+const auth = require('../middleware/authMiddleware');
 
 router
   .route('/')
@@ -22,9 +25,14 @@ router
 
 router
   .route('/:id')
-    .get(usersGetIdController)
-    .put(validDataUpdateUser, usersPutIdController)
-    .delete(usersDeleteIdController)
+    .get(auth, usersGetIdController)
+    .put(auth, validDataUpdateUser, usersPutIdController)
+    .delete(auth, usersDeleteIdController)
+;
+
+router
+  .route('/login')
+    .post(usersLoginController)
 ;
 
 module.exports = router;
