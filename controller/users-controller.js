@@ -43,8 +43,12 @@ const usersPostController = async (req, res, next) => {
 const usersGetIdController = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const foundUser = await User.find({ _id });
-    res.status(200).send(foundUser);
+    if (_id !== req.tokenUser.userId) {
+      res.status(401).send('Du darfst nur deine eigenen Daten einsehen.');
+    } else {
+      const foundUser = await User.find({ _id });
+      res.status(200).send(foundUser);
+    }
   } catch (err) {
     const error = createError(500, 'Fehler bei GET auf /users/ mit ID ' + err);
     next(error);
@@ -56,7 +60,7 @@ const usersPutIdController = async (req, res, next) => {
     const newData = req.body;
     const _id = req.params.id;
     const errors = validationResult(req);
-    if (_id !== req.tokenUser) {
+    if (_id !== req.tokenUser.userId) {
       res.status(401).send('Du darfst nur eigene Daten ändern.');
     } else if (!errors.isEmpty()) {
       res.status(422).json({
@@ -86,8 +90,12 @@ const usersPutIdController = async (req, res, next) => {
 const usersDeleteIdController = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const result = await User.deleteOne({ _id });
-    res.status(200).send(result);
+    if (_id !== req.tokenUser.userId) {
+      res.status(401).send('Du darfst nur deine eigenen Daten löschen.');
+    } else {
+      const result = await User.deleteOne({ _id });
+      res.status(200).send(result);
+    }
   }
   catch (err) {
     const error = createError(500, 'Fehler bei DELETE auf /users/ mit ID ' + err);
@@ -110,7 +118,7 @@ const usersLoginController = async (req, res, next) => {
         const token = jwt.sign({
           email: userFromDb.email,
           userId: userFromDb._id
-        }, process.env.JWT ?? 'Geheimnis', { expiresIn: '3h'});
+        }, process.env.JWT ?? 'Geheimnis', { expiresIn: '3h' });
         res.status(200).json({
           nachricht: 'Du bist eingeloggt.',
           token: token
