@@ -23,13 +23,17 @@ db.once('open', () => {
   // Seeding users
   let users = [];
 
+  // damit die Emails nur aus Kleinbuchstaben besteht, wie sonst durch sanitization erreicht wird.
+  // Es ist wichtig für Suche/Vergleich.
+  const schreibErsteBuchstabeKlein = str => str.slice(0, 1).toLowerCase() + str.slice(1);
+
   for (let i = 0; i < 20; i++) {
     const vorname = faker.name.firstName();
     const nachname = faker.name.lastName();
     let newUser = {
       vorname,
       nachname,
-      email: faker.internet.email(vorname, nachname),
+      email: faker.internet.email(schreibErsteBuchstabeKlein(vorname), schreibErsteBuchstabeKlein(nachname)),
       password: faker.internet.password(10)
     };
     users.push(newUser);
