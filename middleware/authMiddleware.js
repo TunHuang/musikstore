@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     req.tokenUser = decodedToken;
     next();
   } catch (err) {
-    const error = createError(401, 'Keine Rechte für diese Aktion.');
+    const error = createError(401, 'Einloggen fehlgeschlagen.' + err);
     next(error);
   }
 };

@@ -16,9 +16,11 @@ const {
 } = require('../validations/user-validation');
 
 const auth = require('../middleware/authMiddleware');
+const isAdmin = require('../middleware/adminMiddleware');
 
 router
   .route('/')
+    // .get(isAdmin, auth, usersGetController)
     .get(usersGetController)
     .post(validDataUser, usersPostController)
 ;
