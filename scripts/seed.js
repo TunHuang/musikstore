@@ -4,7 +4,7 @@ const User = require('../models/user-model');
 const Record = require('../models/record-model');
 const Order = require('../models/order-model');
 
-const uri = 'mongodb://localhost:27017/seededRecordshop';
+const uri = process.env.MONGO ?? 'mongodb://localhost:27017/seededRecordshop';
 
 
 mongoose.connect(uri, {

@@ -18,7 +18,7 @@ const undefinedRouter = require('./routes/undefined');
 const app = express();
 
 // mongoose
-const uri = 'mongodb://localhost:27017/seededRecordshop';
+const uri = process.env.MONGO ?? 'mongodb://localhost:27017/seededRecordshop';
 
 
 mongoose.connect(uri, {
