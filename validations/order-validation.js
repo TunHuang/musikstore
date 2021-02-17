@@ -1,7 +1,7 @@
 const { check } = require('express-validator');
 
 const validDataOrder = [
-  check('produkt-id')
+  check('produktId')
     .not()
     .isEmpty()
     .withMessage('Produkt-ID muss angegeben werden.')
@@ -19,7 +19,7 @@ const validDataOrder = [
 ];
 
 const validDataUpdateOrder = [
-  check('produkt-id')
+  check('produktId')
     .not()
     .isEmpty()
     .optional()
