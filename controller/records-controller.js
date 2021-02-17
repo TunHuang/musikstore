@@ -16,10 +16,7 @@ const recordsGetController = async (req, res, next) => {
 const recordsPostController = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-    const user = await User.findOne({_id : req.tokenUser.userId});
-    if (!user.admin) {
-      res.status(401).send('Nur Administratoren dürfen das tun.');
-    } else if (!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       res.status(422).json({
         fehlerBeiValidierung: errors.array()
       });

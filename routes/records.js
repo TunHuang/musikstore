@@ -15,19 +15,19 @@ const {
 } = require('../validations/record-validation');
 
 const auth = require('../middleware/authMiddleware');
-const isAdmin = require('../middleware/adminMiddleware');
+const admin = require('../middleware/adminMiddleware');
 
 router
   .route('/')
     .get(recordsGetController)
-    .post(auth, validDataRecord, recordsPostController)
+    .post(auth, admin, validDataRecord, recordsPostController)
 ;
 
 router
   .route('/:id')
     .get(recordsGetIdController)
-    .put(validDataUpdateRecord, recordsPutIdController)
-    .delete(recordsDeleteIdController)
+    .put(auth, admin, validDataUpdateRecord, recordsPutIdController)
+    .delete(auth, admin, recordsDeleteIdController)
 ;
 
 module.exports = router;

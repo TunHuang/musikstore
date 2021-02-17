@@ -17,12 +17,12 @@ const {
 
 const auth = require('../middleware/authMiddleware');
 const user = require('../middleware/userMiddleware');
-const isAdmin = require('../middleware/adminMiddleware');
+const admin = require('../middleware/adminMiddleware');
 
 router
   .route('/')
     // .get(isAdmin, auth, usersGetController)
-    .get(usersGetController)
+    .get(auth, admin, usersGetController)
     .post(validDataUser, usersPostController)
 ;
 

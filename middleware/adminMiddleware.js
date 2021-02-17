@@ -3,15 +3,13 @@ const User = require('../models/user-model');
 
 module.exports = async (req, res, next) => {
   try {
-    const isAdmin = await User.findOne({ email: req.email }).isAdmin;
-    console.log(isAdmin);
-    console.log(req.email);
-    if (!isAdmin) {
-      throw 'Nur Administratoren dürfen diese Aktion ausführen.';
+    const user = await User.findOne({ _id: req.tokenUser.userId});
+    if (!user.admin) {
+      throw 'Nur Administratoren dürfen das tun.'
     }
     next();
   } catch (err) {
-    const error = createError(401, 'Einloggen fehlgeschlagen' + err);
+    const error = createError(401, 'Einloggen fehlgeschlagen ' + err);
     next(error);
   }
 };
