@@ -43,12 +43,8 @@ const usersPostController = async (req, res, next) => {
 const usersGetIdController = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    if (_id !== req.tokenUser.userId) {
-      res.status(401).send('Du darfst nur deine eigenen Daten einsehen.');
-    } else {
-      const foundUser = await User.find({ _id });
-      res.status(200).send(foundUser);
-    }
+    const foundUser = await User.find({ _id });
+    res.status(200).send(foundUser);
   } catch (err) {
     const error = createError(500, 'Fehler bei GET auf /users/ mit ID ' + err);
     next(error);
@@ -60,9 +56,7 @@ const usersPutIdController = async (req, res, next) => {
     const newData = req.body;
     const _id = req.params.id;
     const errors = validationResult(req);
-    if (_id !== req.tokenUser.userId) {
-      res.status(401).send('Du darfst nur eigene Daten ändern.');
-    } else if (!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       res.status(422).json({
         fehlerBeiValidierung: errors.array()
       });
@@ -80,8 +74,7 @@ const usersPutIdController = async (req, res, next) => {
         res.status(200).send(updatedUser);
       }
     }
-  }
-  catch (err) {
+  } catch (err) {
     const error = createError(500, 'Fehler bei PUT auf /users/ mit ID ' + err);
     next(error);
   }
@@ -90,12 +83,8 @@ const usersPutIdController = async (req, res, next) => {
 const usersDeleteIdController = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    if (_id !== req.tokenUser.userId) {
-      res.status(401).send('Du darfst nur deine eigenen Daten löschen.');
-    } else {
-      const result = await User.deleteOne({ _id });
-      res.status(200).send(result);
-    }
+    const result = await User.deleteOne({ _id });
+    res.status(200).send(result);
   }
   catch (err) {
     const error = createError(500, 'Fehler bei DELETE auf /users/ mit ID ' + err);

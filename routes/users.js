@@ -16,6 +16,7 @@ const {
 } = require('../validations/user-validation');
 
 const auth = require('../middleware/authMiddleware');
+const user = require('../middleware/userMiddleware');
 const isAdmin = require('../middleware/adminMiddleware');
 
 router
@@ -27,9 +28,9 @@ router
 
 router
   .route('/:id')
-    .get(auth, usersGetIdController)
-    .put(auth, validDataUpdateUser, usersPutIdController)
-    .delete(auth, usersDeleteIdController)
+    .get(auth, user, usersGetIdController)
+    .put(auth, user, validDataUpdateUser, usersPutIdController)
+    .delete(auth, user, usersDeleteIdController)
 ;
 
 router
