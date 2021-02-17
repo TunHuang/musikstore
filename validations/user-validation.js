@@ -29,7 +29,10 @@ const validDataUser = [
     .withMessage('Passwort muss angegeben werden.')
     .isStrongPassword()
     .withMessage('Passwort ist nicht sicher. Es soll mindestens acht Zeichen enthalten, davon mindestens eine Kleinbuchstabe, mindestens eine Großbuchstabe, mindestens eine Nummer und mindestens ein Sonderzeichen.')
-    .trim()
+    .trim(),
+  check('isAdmin')
+    .optional()
+    .isBoolean()
 ];
 
 const validDataUpdateUser = [
